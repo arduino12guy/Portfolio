@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNCERTIFIED ENGINEER | Maker & AI Enthusiast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        paper: {
+                            bg: '#f8f7f2',
+                            card: '#ffffff',
+                            ink: '#1a1a1a',
+                            shadow: 'rgba(26, 26, 26, 0.08)',
+                            // Dark variants
+                            'bg-dark': '#121211',
+                            'card-dark': '#1c1c1b',
+                            'ink-dark': '#f8f7f2',
+                        },
+                        accent: {
+                            blue: '#3b82f6',
+                            border: '#e5e7eb',
+                            'border-dark': '#2d2d2c',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8f7f2;
+            color: #1a1a1a;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .dark body {
+            background-color: #121211;
+            color: #f8f7f2;
+        }
+        .paper-shadow {
+            box-shadow: 6px 6px 0px 0px rgba(26, 26, 26, 0.08);
+        }
+        .paper-shadow-lg {
+            box-shadow: 8px 8px 0px 0px rgba(26, 26, 26, 0.08);
+        }
+        .paper-shadow-sm {
+            box-shadow: 4px 4px 0px 0px rgba(26, 26, 26, 0.08);
+        }
+        .dark .paper-shadow,
+        .dark .paper-shadow-lg,
+        .dark .paper-shadow-sm {
+            box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.4);
+        }
+        .vertical-rl {
+            writing-mode: vertical-rl;
+        }
+        .interest-card:hover {
+            box-shadow: 4px 4px 0px 0px #ece4cc;
+        }
+        .dark .interest-card:hover {
+            box-shadow: 4px 4px 0px 0px #4a4538;
+        }
+        #scroll-progress {
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+        .scrap {
+            pointer-events: none;
+            position: fixed;
+            background: white;
+            border: 1px solid #e5e7eb;
+            opacity: 0.05;
+            z-index: 0;
+            transition: opacity 0.5s ease;
+        }
+        .dark .scrap {
+            background: #1c1c1b;
+            border-color: #2d2d2c;
+            opacity: 0.1;
+        }
+        
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-visible {
+            opacity: 1;
+            transform: translateY(0) rotate(var(--tw-rotate, 0deg));
+        }
+
+        /* Mobile Nav */
+        #mobile-menu {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #mobile-menu.active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="selection:bg-paper-ink selection:text-white dark:selection:bg-paper-ink-dark dark:selection:text-paper-ink">
+    <!-- Progress Bar -->
+    <div id="scroll-progress" class="fixed top-0 left-0 right-0 h-1 bg-paper-ink dark:bg-paper-ink-dark z-50"></div>
+
+    <!-- Background Texture -->
+    <div id="texture-bg" class="fixed inset-0 pointer-events-none z-0 opacity-[0.03]" 
+         style="background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png');">
+    </div>
+
+    <!-- Background Scraps -->
+    <div id="scraps-container" class="hidden sm:block"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full p-4 md:p-12 flex justify-between items-center z-40 pointer-events-none">
+        <div class="flex items-center gap-4">
+            <div class="pointer-events-auto bg-white dark:bg-paper-card-dark p-2 md:p-3 shadow-[4px_4px_0px_0px_rgba(26,26,26,0.08)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] border border-accent-border dark:border-accent-border-dark rotate-[-1deg]">
+                <span class="font-sans font-black text-lg md:text-xl tracking-tighter uppercase text-paper-ink dark:text-paper-ink-dark">UE.ENGINEER</span>
+            </div>
+            
+            <!-- Dark Mode Toggle -->
+            <button id="theme-toggle" class="pointer-events-auto bg-white dark:bg-paper-card-dark p-2 border border-accent-border dark:border-accent-border-dark shadow-[2px_2px_0px_0px_rgba(26,26,26,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.4)] hover:scale-110 mb-[-4px] transition-transform">
+                <i data-lucide="sun" id="theme-icon-sun" class="w-4 h-4 text-paper-ink dark:text-paper-ink-dark hidden dark:block"></i>
+                <i data-lucide="moon" id="theme-icon-moon" class="w-4 h-4 text-paper-ink dark:text-paper-ink-dark block dark:hidden"></i>
+            </button>
+        </div>
+        
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex gap-6 pointer-events-auto font-sans text-[10px] font-black uppercase tracking-tighter">
+            <a href="#workshop" class="px-3 py-1 bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark shadow-[2px_2px_0px_0px_rgba(26,26,26,0.08)] hover:bg-white/80 dark:hover:bg-paper-card-dark/80 transition-colors text-paper-ink dark:text-paper-ink-dark">Workshop</a>
+            <a href="#projects" class="px-3 py-1 bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark shadow-[2px_2px_0px_0px_rgba(26,26,26,0.08)] hover:bg-white/80 dark:hover:bg-paper-card-dark/80 transition-colors text-paper-ink dark:text-paper-ink-dark">Lab</a>
+            <a href="#interests" class="px-3 py-1 bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark shadow-[2px_2px_0px_0px_rgba(26,26,26,0.08)] hover:bg-white/80 dark:hover:bg-paper-card-dark/80 transition-colors text-paper-ink dark:text-paper-ink-dark">Likes</a>
+            <a href="#links" class="px-3 py-1 bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark shadow-[2px_2px_0px_0px_rgba(26,26,26,0.08)] hover:bg-white/80 dark:hover:bg-paper-card-dark/80 transition-colors text-accent-blue">Connect</a>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="menu-toggle" class="md:hidden pointer-events-auto bg-white dark:bg-paper-card-dark p-2 border border-accent-border dark:border-accent-border-dark shadow-[4px_4px_0px_0px_rgba(26,26,26,0.08)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)]">
+            <i data-lucide="menu" class="w-6 h-6 text-paper-ink dark:text-paper-ink-dark"></i>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-paper-bg dark:bg-paper-bg-dark z-40 translate-y-[-100%] md:hidden flex flex-col items-center justify-center gap-8 px-10">
+        <button id="menu-close" class="absolute top-6 right-6 p-4">
+            <i data-lucide="x" class="w-8 h-8 text-paper-ink dark:text-paper-ink-dark"></i>
+        </button>
+        <a href="#workshop" class="text-4xl font-black uppercase tracking-tighter mobile-nav-link text-paper-ink dark:text-paper-ink-dark">Workshop</a>
+        <a href="#projects" class="text-4xl font-black uppercase tracking-tighter mobile-nav-link text-paper-ink dark:text-paper-ink-dark">Lab</a>
+        <a href="#interests" class="text-4xl font-black uppercase tracking-tighter mobile-nav-link text-paper-ink dark:text-paper-ink-dark">Likes</a>
+        <a href="#links" class="text-4xl font-black uppercase tracking-tighter mobile-nav-link text-accent-blue">Connect</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="top" class="min-h-screen flex flex-col items-center justify-center pt-24 px-6 relative z-10 overflow-hidden">
+        <div class="flex flex-col items-center text-center">
+            <div id="hero-card" class="bg-white dark:bg-paper-card-dark p-6 md:p-12 paper-shadow-lg border border-accent-border dark:border-accent-border-dark rotate-[-1deg] mb-12 relative transition-transform duration-500 reveal">
+                <div class="absolute -top-4 -left-4 bg-[#fff9e6] dark:bg-[#2a2820] border border-[#e8dfc3] dark:border-[#3d3a2e] px-3 py-1 shadow-[2px_2px_0px_0px_#ece4cc] dark:shadow-[2px_2px_0px_0px_#3d3a2e] font-mono text-[8px] uppercase tracking-tighter -rotate-3 text-paper-ink dark:text-paper-ink-dark">
+                    Build: Stable
+                </div>
+                <h1 class="text-4xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark leading-none">
+                    UNCERTIFIED <br class="hidden sm:block" /> ENGINEER
+                </h1>
+                <p class="text-xs md:text-lg font-bold text-accent-blue mt-6 flex items-center justify-center uppercase tracking-tighter">
+                    <span class="mr-2 text-[8px]">●</span> MAKER & AI ENTHUSIAST
+                </p>
+            </div>
+
+            <p class="max-w-md text-sm md:text-lg font-medium opacity-60 leading-relaxed text-gray-600 dark:text-gray-400 reveal" style="transition-delay: 200ms">
+                I spend my days bridging the gap between microcontrollers and modern AI. Currently exploring what happens when you give an ESP32 a brain.
+            </p>
+
+            <div class="mt-16 flex gap-4 animate-bounce reveal" style="transition-delay: 400ms">
+                <div class="w-px h-8 md:h-12 bg-paper-ink dark:bg-paper-ink-dark opacity-20"></div>
+                <span class="font-mono text-[8px] md:text-[10px] uppercase tracking-[0.3em] vertical-rl opacity-40 text-paper-ink dark:text-paper-ink-dark">Scroll</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workshop Section -->
+    <section id="workshop" class="max-w-7xl mx-auto py-20 md:py-32 px-4 md:px-6 relative z-10">
+        <div class="flex items-center gap-4 md:gap-6 mb-16 reveal">
+            <h2 class="text-3xl md:text-6xl font-black uppercase tracking-tighter whitespace-nowrap text-paper-ink dark:text-paper-ink-dark">The Workshop</h2>
+            <div class="h-px flex-grow bg-paper-ink dark:bg-paper-ink-dark opacity-10"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start text-left">
+            <div class="space-y-6 text-lg md:text-2xl font-bold leading-tight reveal text-paper-ink dark:text-paper-ink-dark">
+                <p>Hardware is hard, but that's what makes it fun.</p>
+                <p class="opacity-60 text-sm md:text-lg font-medium lg:max-w-md text-gray-600 dark:text-gray-400">
+                    I love working at the intersection of bits and atoms. Whether it's soldering a custom circuit board or fine-tuning a Large Language Model, I'm always looking for the next challenge.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 md:gap-6 reveal">
+                <div class="aspect-square flex flex-col justify-end p-4 md:p-6 bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark paper-shadow rotate-[1deg]">
+                    <i data-lucide="microchip" class="w-8 h-8 mb-auto opacity-10 text-paper-ink dark:text-paper-ink-dark"></i>
+                    <span class="text-3xl md:text-4xl font-black mb-2 uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">50+</span>
+                    <span class="text-[8px] font-black uppercase tracking-tighter text-gray-400">Circuit Boards</span>
+                </div>
+                <div class="aspect-square flex flex-col justify-end p-4 md:p-6 bg-[#fefefe] dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark paper-shadow rotate-[-0.5deg]">
+                    <i data-lucide="coffee" class="w-8 h-8 mb-auto opacity-10 text-paper-ink dark:text-paper-ink-dark"></i>
+                    <span class="text-3xl md:text-4xl font-black mb-2 uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">∞</span>
+                    <span class="text-[8px] font-black uppercase tracking-tighter text-gray-400">Coffee & Solder</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Projects Section -->
+    <section id="projects" class="max-w-7xl mx-auto py-32 px-6 relative z-10">
+        <div class="flex items-center gap-6 mb-24 reveal">
+            <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">Hardware Lab</h2>
+            <div class="h-px flex-grow bg-paper-ink dark:bg-paper-ink-dark opacity-10"></div>
+        </div>
+
+        <div class="space-y-32" id="projects-list">
+            <!-- Projects will be injected here if dynamic, otherwise static -->
+             <!-- Project 1 -->
+            <div class="flex flex-col md:flex-row gap-12 items-center reveal">
+                <div class="w-full md:w-1/2">
+                    <div class="bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark paper-shadow p-0 overflow-hidden aspect-video group -rotate-1">
+                        <div class="w-full h-full bg-paper-ink/[0.03] dark:bg-paper-ink-dark/[0.03] flex items-center justify-center p-6 transition-colors group-hover:bg-paper-ink/[0.08] dark:group-hover:bg-paper-ink-dark/[0.08]">
+                            <i data-lucide="cpu" class="w-16 h-16 opacity-10 group-hover:opacity-20 transition-opacity text-paper-ink dark:text-paper-ink-dark"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 text-left">
+                    <span class="text-[10px] font-black uppercase tracking-tighter text-gray-400 mb-4 block">Build 01</span>
+                    <h3 class="text-3xl md:text-5xl mb-6 font-black uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">ATLAS AI — Travel Guide</h3>
+                    <p class="text-base opacity-60 mb-8 max-w-sm leading-relaxed font-medium text-gray-600 dark:text-gray-400">An AI-powered travel guide project that use ai to assist travelers.</p>
+                    <div class="flex flex-wrap gap-2 mb-8">
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">ESP32</span>
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">AI</span>
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">API</span>
+                    </div>
+                    <a href="https://www.instructables.com/ATLAS-AI-Travel-Guide/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 group bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark px-5 py-2 shadow-[4px_4px_0px_0px_rgba(26,26,26,0.08)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-transform active:translate-x-0 active:translate-y-0 text-paper-ink dark:text-paper-ink-dark">
+                        <span class="font-sans text-[10px] font-black uppercase tracking-tighter">View Guide</span>
+                        <i data-lucide="external-link" class="w-3 h-3 group-hover:text-accent-blue transition-colors"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="flex flex-col md:flex-row-reverse gap-12 items-center reveal">
+                <div class="w-full md:w-1/2">
+                    <div class="bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark paper-shadow p-0 overflow-hidden aspect-video group rotate-1">
+                        <div class="w-full h-full bg-paper-ink/[0.03] dark:bg-paper-ink-dark/[0.03] flex items-center justify-center p-6 transition-colors group-hover:bg-paper-ink/[0.08] dark:group-hover:bg-paper-ink-dark/[0.08]">
+                            <i data-lucide="zap" class="w-16 h-16 opacity-10 group-hover:opacity-20 transition-opacity text-paper-ink dark:text-paper-ink-dark"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 text-left md:text-right flex flex-col md:items-end">
+                    <span class="text-[10px] font-black uppercase tracking-tighter text-gray-400 mb-4 block">Build 02</span>
+                    <h3 class="text-3xl md:text-5xl mb-6 font-black uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">S.Y.N.C-one</h3>
+                    <p class="text-base opacity-60 mb-8 max-w-sm leading-relaxed font-medium text-gray-600 dark:text-gray-400">A modern day Recreation of a lost technology, pagers. Made with esp32, works completely off-grid without the need of internet, wifi or cellular network. works on ESP-NOW protocol.</p>
+                    <div class="flex flex-wrap gap-2 mb-8 md:justify-end">
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">esp32</span>
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">ESP-NOW</span>
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">Off-grid</span>
+                    </div>
+                    <a href="https://www.instructables.com/SYNC-one/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 group bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark px-5 py-2 shadow-[4px_4px_0px_0px_rgba(26,26,26,0.08)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-transform active:translate-x-0 active:translate-y-0 text-left text-paper-ink dark:text-paper-ink-dark">
+                        <span class="font-sans text-[10px] font-black uppercase tracking-tighter">View Guide</span>
+                        <i data-lucide="external-link" class="w-3 h-3 group-hover:text-accent-blue transition-colors"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Project 3 -->
+            <div class="flex flex-col md:flex-row gap-12 items-center reveal">
+                <div class="w-full md:w-1/2">
+                    <div class="bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark paper-shadow p-0 overflow-hidden aspect-video group -rotate-0.5">
+                        <div class="w-full h-full bg-paper-ink/[0.03] dark:bg-paper-ink-dark/[0.03] flex items-center justify-center p-6 transition-colors group-hover:bg-paper-ink/[0.08] dark:group-hover:bg-paper-ink-dark/[0.08]">
+                            <i data-lucide="settings" class="w-16 h-16 opacity-10 group-hover:opacity-20 transition-opacity text-paper-ink dark:text-paper-ink-dark"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 text-left">
+                    <span class="text-[10px] font-black uppercase tracking-tighter text-gray-400 mb-4 block">Build 03</span>
+                    <h3 class="text-3xl md:text-5xl mb-6 font-black uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">ASTRA-32</h3>
+                    <p class="text-base opacity-60 mb-8 max-w-sm leading-relaxed font-medium text-gray-600 dark:text-gray-400">A flight controller made completely from scratch with NodeMCU to learn basic flight Avionics.</p>
+                    <div class="flex flex-wrap gap-2 mb-8">
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">ESP32</span>
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">Flight controller</span>
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">C++</span>
+                    </div>
+                    <a href="https://www.instructables.com/ASTRA-32/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 group bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark px-5 py-2 shadow-[4px_4px_0px_0px_rgba(26,26,26,0.08)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-transform active:translate-x-0 active:translate-y-0 text-paper-ink dark:text-paper-ink-dark">
+                        <span class="font-sans text-[10px] font-black uppercase tracking-tighter">View Guide</span>
+                        <i data-lucide="external-link" class="w-3 h-3 group-hover:text-accent-blue transition-colors"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Project 4 -->
+            <div class="flex flex-col md:flex-row-reverse gap-12 items-center reveal">
+                <div class="w-full md:w-1/2">
+                    <div class="bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark paper-shadow p-0 overflow-hidden aspect-video group rotate-1">
+                        <div class="w-full h-full bg-paper-ink/[0.03] dark:bg-paper-ink-dark/[0.03] flex items-center justify-center p-6 transition-colors group-hover:bg-paper-ink/[0.08] dark:group-hover:bg-paper-ink-dark/[0.08]">
+                            <i data-lucide="wrench" class="w-16 h-16 opacity-10 group-hover:opacity-20 transition-opacity text-paper-ink dark:text-paper-ink-dark"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 text-left md:text-right flex flex-col md:items-end">
+                    <span class="text-[10px] font-black uppercase tracking-tighter text-gray-400 mb-4 block">Build 04</span>
+                    <h3 class="text-3xl md:text-5xl mb-6 font-black uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">Gemini AI Assistant</h3>
+                    <p class="text-base opacity-60 mb-8 max-w-sm leading-relaxed font-medium text-gray-600 dark:text-gray-400">Integrating Google's Gemini AI with ESP32 to be a simple desk assistant.</p>
+                    <div class="flex flex-wrap gap-2 mb-8 md:justify-end">
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">Gemini AI</span>
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">ESP32</span>
+                        <span class="text-[8px] font-black uppercase tracking-tighter bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded">API</span>
+                    </div>
+                    <a href="https://www.instructables.com/Gemini-AI-Assistant-With-Esp32/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 group bg-white dark:bg-paper-card-dark border border-accent-border dark:border-accent-border-dark px-5 py-2 shadow-[4px_4px_0px_0px_rgba(26,26,26,0.08)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-transform active:translate-x-0 active:translate-y-0 text-paper-ink dark:text-paper-ink-dark">
+                        <span class="font-sans text-[10px] font-black uppercase tracking-tighter">View Guide</span>
+                        <i data-lucide="external-link" class="w-3 h-3 group-hover:text-accent-blue transition-colors"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Interests Section -->
+    <section id="interests" class="max-w-7xl mx-auto py-32 px-6 relative z-10">
+        <div class="flex items-center gap-6 mb-16 reveal">
+            <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">What I Like</h2>
+            <div class="h-px flex-grow bg-paper-ink dark:bg-paper-ink-dark opacity-10"></div>
+        </div>
+
+        <div class="bg-[#fff9e6] dark:bg-[#2a2820] p-8 md:p-12 border border-[#e8dfc3] dark:border-[#3d3a2e] shadow-[8px_8px_0px_0px_#ece4cc] dark:shadow-[8px_8px_0px_0px_#3d3a2e] rotate-[1deg] reveal">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="interests-grid">
+                <!-- Interest items will be injected by JS or kept static -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Links Section -->
+    <section id="links" class="max-w-7xl mx-auto py-32 px-6 relative z-10">
+        <div class="flex items-center gap-6 mb-16 reveal">
+            <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">Let's Talk</h2>
+            <div class="h-px flex-grow bg-paper-ink dark:bg-paper-ink-dark opacity-10"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            <div class="md:col-span-8 reveal">
+                <div class="bg-white dark:bg-paper-card-dark p-12 md:p-16 border border-accent-border dark:border-accent-border-dark paper-shadow rotate-[0.5deg]">
+                    <h3 class="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-12 max-w-md text-paper-ink dark:text-paper-ink-dark">
+                        Got a weird idea or a cool project? I'm always down to chat.
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10" id="socials-container">
+                        <!-- Socials -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="md:col-span-4 flex flex-col gap-6 reveal" style="transition-delay: 200ms">
+                <div class="bg-white dark:bg-paper-card-dark p-8 border border-accent-border dark:border-accent-border-dark paper-shadow flex-grow flex flex-col items-center justify-center text-center">
+                    <div class="w-full aspect-square bg-gray-50 dark:bg-paper-bg-dark border border-accent-border dark:border-accent-border-dark overflow-hidden mb-6 flex items-center justify-center">
+                        <img src="/Images/Logo.png" alt="Logo" class="w-full h-full object-contain p-4" onerror="this.src='https://via.placeholder.com/150?text=LOGO'">
+                    </div>
+                    <p class="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-2">UNCERTIFIED ENGINEER</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 border-t border-paper-ink/5 text-center px-6 reveal">
+        <span class="font-mono text-[10px] uppercase tracking-[0.5em] opacity-20">
+            Made with care / &copy; 2026
+        </span>
+    </footer>
+
+    <script>
+        // Data
+        const INTERESTS = [
+            { name: 'Arduino', icon: 'cpu' },
+            { name: 'ESP32', icon: 'zap' },
+            { name: 'Robotics', icon: 'settings' },
+            { name: 'AI', icon: 'globe' },
+            { name: 'DIY Tech', icon: 'wrench' },
+            { name: 'AI Automation', icon: 'zap' },
+            { name: 'Science', icon: 'book' },
+            { name: 'Photography', icon: 'camera' },
+            { name: 'Ethical Hacking', icon: 'code' },
+            { name: 'Music', icon: 'music' },
+            { name: 'Astrophotography', icon: 'camera' },
+            { name: 'Gaming', icon: 'settings' }
+        ];
+
+        const SOCIALS = [
+            { platform: 'YouTube', url: 'https://youtube.com/@the-uncertified-engineer'},
+            { platform: 'Instructables', url: 'https://www.instructables.com/member/Arduino_guy/'},
+            { platform: 'GitHub', url: 'https://github.com/arduino12guy'}
+        ];
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initial Theme Check
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            // Theme Toggle Logic
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    const isDark = document.documentElement.classList.toggle('dark');
+                    localStorage.theme = isDark ? 'dark' : 'light';
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                });
+            }
+
+            // Render Interests
+            const grid = document.getElementById('interests-grid');
+            INTERESTS.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'interest-card flex items-center gap-3 bg-white/50 dark:bg-paper-card-dark/50 px-4 py-3 border border-yellow-200 dark:border-yellow-900/30 hover:bg-white dark:hover:bg-paper-card-dark transition-all cursor-default group';
+                div.innerHTML = `
+                    <i data-lucide="${item.icon}" class="w-4 h-4 text-yellow-700 dark:text-yellow-500 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-[10px] font-black uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">${item.name}</span>
+                `;
+                grid.appendChild(div);
+            });
+
+            // Render Socials
+            const socContainer = document.getElementById('socials-container');
+            if (socContainer) {
+                SOCIALS.forEach(social => {
+                    const a = document.createElement('a');
+                    a.href = social.url;
+                    a.target = "_blank";
+                    a.rel = "noopener noreferrer";
+                    a.className = 'group flex items-center justify-between border-b border-gray-100 dark:border-white/5 pb-3 hover:border-accent-blue transition-colors';
+                    a.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="${social.icon}" class="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-accent-blue transition-colors"></i>
+                            <span class="font-sans text-sm font-bold uppercase tracking-tighter text-paper-ink dark:text-paper-ink-dark">${social.platform}</span>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-600 opacity-60">@${social.platform.toLowerCase()}</span>
+                    `;
+                    socContainer.appendChild(a);
+                });
+            }
+
+            // Mobile Menu Logic
+            const menuToggle = document.getElementById('menu-toggle');
+            const menuClose = document.getElementById('menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+            const toggleMenu = (state) => {
+                if (mobileMenu) {
+                    mobileMenu.classList.toggle('active', state);
+                    document.body.style.overflow = state ? 'hidden' : '';
+                }
+            };
+
+            if (menuToggle) menuToggle.addEventListener('click', () => toggleMenu(true));
+            if (menuClose) menuClose.addEventListener('click', () => toggleMenu(false));
+            mobileLinks.forEach(link => link.addEventListener('click', () => toggleMenu(false)));
+
+            // Create Paper Scraps
+            const scrapContainer = document.getElementById('scraps-container');
+            if (scrapContainer) {
+                for(let i=0; i<8; i++) {
+                    const scrap = document.createElement('div');
+                    scrap.className = 'scrap';
+                    scrap.style.width = (40 + i * 25) + 'px';
+                    scrap.style.height = (30 + i * 15) + 'px';
+                    scrap.style.top = (i * 18) + '%';
+                    scrap.style.left = (i % 2 === 0 ? 5 + i * 2 : 70 - i * 3) + '%';
+                    scrap.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    scrapContainer.appendChild(scrap);
+                }
+            }
+
+            // Refresh Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+            // Image error handling helper for icons
+            window.handleImgError = function(img) {
+                img.style.display = 'none';
+                const icon = img.nextElementSibling;
+                if (icon) {
+                    icon.style.display = 'block';
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                }
+            };
+            
+            // Animation Loop
+            setupAnimations();
+            
+            // Setup Reveal Observer
+            const observerOptions = {
+                threshold: 0.15,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('reveal-visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
+
+        // Animations & Effects
+        function setupAnimations() {
+            const progress = document.getElementById('scroll-progress');
+            const texture = document.getElementById('texture-bg');
+            const scraps = document.querySelectorAll('.scrap');
+            const heroCard = document.getElementById('hero-card');
+
+            window.addEventListener('scroll', () => {
+                const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPos = window.pageYOffset;
+                const scrollPercent = scrollPos / totalHeight;
+                
+                // Progress Bar
+                progress.style.transform = `scaleX(${scrollPercent})`;
+
+                // Vertical scroll movement for scraps
+                scraps.forEach((scrap, i) => {
+                    const speed = (i + 1) * 100;
+                    const y = -scrollPercent * speed;
+                    const rotate = scrap.style.transform.match(/rotate\((.*?)\)/)?.[1] || '0deg';
+                    scrap.style.transform = `translateY(${y}px) rotate(${rotate})`;
+                });
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                const x = e.clientX;
+                const y = e.clientY;
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                
+                // Parallax shift calculation
+                const shiftX = (x - centerX) / centerX;
+                const shiftY = (y - centerY) / centerY;
+
+                // Texture shift
+                texture.style.transform = `translate(${shiftX * 10}px, ${shiftY * 10}px)`;
+
+                // Scraps horizontal shift
+                scraps.forEach((scrap, i) => {
+                    const speed = i * 5;
+                    const hShift = shiftX * speed;
+                    const vShift = shiftY * speed * 0.5;
+                    scrap.style.marginLeft = `${hShift}px`;
+                    scrap.style.marginTop = `${vShift}px`;
+                });
+
+                // Hero Card subtle tilt
+                if (heroCard && heroCard.classList.contains('reveal-visible')) {
+                    heroCard.style.transform = `rotate(${-1 + shiftX * 2}deg) translate(${shiftX * 5}px, ${shiftY * 5}px)`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
